@@ -11,25 +11,27 @@
   </head>
 
   <body>
-    <h1>Search Ursers</h1>
-    <div class="flex-row">
-      <div class="preloader-wrapper small active">
-        <div class="spinner-layer spinner-blue-only">
-          <div class="circle-clipper left">
-            <div class="circle"></div>
-          </div>
-          <div class="gap-patch">
-            <div class="circle"></div>
-          </div>
-          <div class="circle-clipper right">
-            <div class="circle"></div>
+    <div class="container">
+      <h1>Search Ursers</h1>
+      <div id="spinner" class="flex-row">
+        <div class="preloader-wrapper small active">
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
           </div>
         </div>
+        <span>Wait please</span>
       </div>
-      <span>Wait please</span>
-    </div>
 
-    <div class="users">Users</div>
+      <div id="users">Users</div>
+    </div>
 
     <script defer src="./js/script.js"></script>
   </body>
