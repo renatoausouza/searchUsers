@@ -3,6 +3,12 @@ let globalCountries = [];
 let globalUsersCountries = [];
 let globalFilteredUsersCountries = [];
 
+let numberFilteredUsers = 0;
+let numberMans = 0;
+let numberWomens = 0;
+let sumAges = 0;
+let averageAge = 0;
+
 async function start() {
   //Normal
   //await fetchUsers();
@@ -23,6 +29,7 @@ async function start() {
 
   hideSpinner();
   mergeUsersAndCountries();
+  renderStatistics();
   render();
   captureEvent();
 }
@@ -42,13 +49,14 @@ async function fetchUsers() {
   const resource = await fetch('http://localhost:3003/users');
   const json = await resource.json();
 
-  globalUsers = json.map(({ dob, login, name, nat, picture }) => {
+  globalUsers = json.map(({ dob, login, name, nat, picture, gender }) => {
     return {
       userId: login.uuid,
       userCountry: nat,
       userName: `${name.first} ${name.last}`,
       userPicture: picture.large,
       userAge: dob.age,
+      userGender: gender,
     };
   });
 }
@@ -125,6 +133,7 @@ function handleFiler(event) {
   });
 
   render();
+  renderStatistics();
 }
 
 function handleFilterKeyUp(event) {
@@ -140,6 +149,7 @@ function render() {
 
   divUsers.innerHTML = `
     <div class='row'>
+    <h2>${numberFilteredUsers} user(s) found.</h2>
       ${globalFilteredUsersCountries
         .map(({ countryFlag, countryName, userPicture, userName, userAge }) => {
           return `
@@ -158,6 +168,65 @@ function render() {
         .join('')}
     </div>
   `;
+}
+
+function renderStatistics() {
+  const divStatistics = document.querySelector('#statistics');
+
+  numberMans = calculateNumberOfMens();
+  numberWomens = calculateNumberOfWomens();
+  sumAges = calculateSumOfAges();
+  numberFilteredUsers = calculateNumberFilteredUsers();
+  averageAge = calculateAvarageAge();
+
+  divStatistics.innerHTML = `
+    <div class='flex-column'>
+      <h2>Statistics</h2>
+      <span class="statistic-span">Male: ${numberMans}</span>
+      <span class="statistic-span">Female: ${numberWomens}</span>
+      <span class="statistic-span">Sum of ages: ${sumAges}</span>
+      <span class="statistic-span">Average of ages: ${averageAge}</span>
+    </div>
+  `;
+  render();
+}
+
+function calculateNumberOfMens() {
+  let filteredMens = globalFilteredUsersCountries.filter(
+    (item) => item.userGender === 'male'
+  );
+  return filteredMens.length;
+}
+
+function calculateNumberOfWomens() {
+  let filteredWomens = globalFilteredUsersCountries.filter(
+    (item) => item.userGender === 'female'
+  );
+  return filteredWomens.length;
+}
+
+function calculateSumOfAges() {
+  let sum = 0;
+  globalFilteredUsersCountries.forEach((item) => {
+    sum = sum + item.userAge;
+  });
+  return sum;
+}
+
+function calculateAvarageAge() {
+  let sum = 0;
+  let avarage = 0;
+  globalFilteredUsersCountries.forEach((item) => {
+    sum = sum + item.userAge;
+  });
+  avarage = sum / globalFilteredUsersCountries.length;
+  console.log(`sum: ${sum} ava: ${avarage}`);
+  return avarage.toFixed(2);
+}
+
+function calculateNumberFilteredUsers() {
+  console.log(globalFilteredUsersCountries.length);
+  return globalFilteredUsersCountries.length;
 }
 
 start();
