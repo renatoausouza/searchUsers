@@ -3,12 +3,37 @@ let globalCountries = [];
 let globalUsersCountries = [];
 
 async function start() {
-  await fetchUsers();
-  await fetchCountries();
+  //Normal
+  //await fetchUsers();
+  //await fetchCountries();
+
+  //Sequencial promise
+  //console.time('promise');
+  //await promiseUsers();
+  //await promiseCountries();
+  //console.timeEnd('promise');
+
+  //Primise "parallel"
+  console.time('promiseParallel');
+  const p1 = promiseUsers();
+  const p2 = promiseCountries();
+  await Promise.all([p1, p2]);
+  console.timeEnd('promiseParallel');
 
   hideSpinner();
   mergeUsersAndCountries();
   render();
+}
+
+function promiseUsers() {
+  return new Promise(async (resolve, reject) => {
+    const users = await fetchUsers();
+
+    setTimeout(() => {
+      console.log('primeseUsers resolvida');
+      resolve(users);
+    }, 3000);
+  });
 }
 
 async function fetchUsers() {
@@ -23,6 +48,17 @@ async function fetchUsers() {
       userPicture: picture.large,
       userAge: dob.age,
     };
+  });
+}
+
+function promiseCountries() {
+  return new Promise(async (resolve, reject) => {
+    const countries = await fetchCountries();
+
+    setTimeout(() => {
+      console.log('promeseCountries resolvida');
+      resolve(countries);
+    }, 2000);
   });
 }
 
@@ -73,7 +109,8 @@ function render() {
               <div class='flex-row bordered'>
                 <img class = 'avatar' src='${userPicture}' alt='${userName}'/>
                 <div class='flex-column'>
-                  <span>${userName}, ${userAge} years old</span>
+                  <span>${userName}</span>
+                  <span>${userAge} years old</span>
                   <img class = 'flag' src='${countryFlag}' alt='${countryName}'/>
                   </div>
                 </div>
