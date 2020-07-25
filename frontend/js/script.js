@@ -1,6 +1,7 @@
 let globalUsers = [];
 let globalCountries = [];
 let globalUsersCountries = [];
+let globalFilteredUsersCountries = [];
 
 async function start() {
   //Normal
@@ -23,6 +24,7 @@ async function start() {
   hideSpinner();
   mergeUsersAndCountries();
   render();
+  captureEvent();
 }
 
 function promiseUsers() {
@@ -94,7 +96,43 @@ function mergeUsersAndCountries() {
     });
   });
 
-  console.log(globalUsersCountries);
+  globalUsersCountries.sort((a, b) => a.userName.localeCompare(b.userName));
+
+  globalFilteredUsersCountries = [...globalUsersCountries];
+}
+
+function captureEvent() {
+  captureButtonEvent();
+  captureEnterKeyEvent();
+}
+
+function captureButtonEvent() {
+  const buttonFilter = document.querySelector('#buttonFilter');
+  buttonFilter.addEventListener('click', handleFiler);
+}
+
+function captureEnterKeyEvent() {
+  const inputFilter = document.querySelector('#inputFilter');
+  inputFilter.addEventListener('keyup', handleFilterKeyUp);
+}
+
+function handleFiler(event) {
+  const inputFilter = document.querySelector('#inputFilter');
+  const filterValuer = inputFilter.value.toLowerCase();
+
+  globalFilteredUsersCountries = globalUsersCountries.filter((item) => {
+    return item.userName.toLowerCase().includes(filterValuer);
+  });
+
+  render();
+}
+
+function handleFilterKeyUp(event) {
+  const { key } = event;
+  if (key !== 'Enter') {
+    return;
+  }
+  handleFiler();
 }
 
 function render() {
@@ -102,7 +140,7 @@ function render() {
 
   divUsers.innerHTML = `
     <div class='row'>
-      ${globalUsersCountries
+      ${globalFilteredUsersCountries
         .map(({ countryFlag, countryName, userPicture, userName, userAge }) => {
           return `
             <div class='col s6 m4 l3'>
